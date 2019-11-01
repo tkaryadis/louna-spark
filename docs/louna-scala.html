@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="./icons/cl.png">
+<link href="./css/bootstrap.min.css" rel="stylesheet">
+<link href="./css/documentation.css" rel="stylesheet">
+<script src="./js/jquery-3.2.1.min.js"></script>
+
+<script>
+function t()
+{
+  $('.tree .icon').click( function() {
+    $(this).parent().toggleClass('expanded').
+    closest('li').find('ul:first').
+    toggleClass('show-effect');
+  });
+}
+window.onload = t;
+</script>
+
+<title>Sparql</title>
+
+</head>
+<body>
+<!--Navigation bar
+<div id="nav-placeholder"></div>-->
+
+ <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">    
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="./index.html"><em>&lambda;ouna</em></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./why.html">Why?</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./documentation.html">Docs</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./louna-scala.html"> <em>&lambda;ouna</em> | Scala </a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./internals.html">Internals</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./doc/index.html">API</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="https://bitbucket.org/tkaryadis/louna/src/master/">Code</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<div id="treediv">
+<ul class="sidenav tree">
+  <li class="tree__item">
+    <span><a href=""> Scala | <em>&lambda;ouna</em></a></span>
+  </li>
+</ul>
+</div>
+
+
+<div class="main">
+<table style="width: 70%"  border="1">
+ <thead>
+    <tr>
+      <th class="sparql">Scala</th>
+      <th class="louna"><em>&lambda;ouna</em></th>
+    </tr>
+  </thead>
+    <tbody>
+
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Sequence to Dataframe</span>
+
+<div class="codeside">
+val myManualSchema = new StructType(Array(
+  new StructField("some", StringType, true),
+  new StructField("col", StringType, true),
+  new StructField("names", LongType, false)))
+
+val myRows = Seq(Row("Hello", null, 1L))
+val myRDD = spark.sparkContext.parallelize(myRows)
+val myDf = spark.createDataFrame(myRDD, myManualSchema)
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+
+<div class="codeside">
+(def myManualSchema [["some"] ["col"] ["names" :long false]])
+
+(def mydf (sql/seq->df [["Hello" nil 1]] myManualSchema))
+
+</div>
+      </pre>
+    </td>
+  </tr>
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Select</span>
+<div class="codeside">
+df.select("DEST_COUNTRY_NAME").show(2)
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(q df
+   [?DEST_COUNTRY_NAME]
+   (.show 2))
+
+</div>
+      </pre>
+    </td>
+  </tr>
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Select and rename</span>
+<div class="codeside">
+df.select(col("DEST_COUNTRY_NAME").alias("dest")).show(2)
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(q  (df - ?dest)                       ;;second place in header         
+    (.show 2))
+
+or
+
+(q  (df ?DEST_COUNTRY_NAME:dest)     ;;in any place in header   
+    (.show 2))
+
+</div>
+      </pre>
+    </td>
+  </tr>
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Filter</span>
+<div class="codeside">
+df.where(col("count") < 2)
+  .where(col("ORIGIN_COUNTRY_NAME") == "Croatia")
+  .show(2)
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(q df
+   ((<_ ?count 2) (=_ ?ORIGIN_COUNTRY_NAME "Croatia"))
+   (.show 2))
+
+</div>
+      </pre>
+    </td>
+  </tr>
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Bind Filter Select</span>
+<div class="codeside">
+val DOTCodeFilter = col("StockCode") === "DOT"
+val priceFilter = col("UnitPrice") > 600
+val descripFilter = col("Description").contains("POSTAGE") 
+df.withColumn("isExpensive", 
+              DOTCodeFilter.and(priceFilter.or(descripFilter)))
+  .where("isExpensive")
+  .select("unitPrice", "isExpensive")
+  .show(5)  
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(q  df
+    ((.and (=_ ?StockCode "DOT") 
+           (.or (>_ ?UnitPrice 600)
+                (includes? ?Description "POSTAGE"))) ?expensive)
+    ((?expensive))
+    [?expensive ?unitPrice]
+    (.show 5))
+
+</div>
+      </pre>
+    </td>
+  </tr>
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Complex Types</span>
+<div class="codeside">
+df.select(split(col("Description"), " ").alias("array_col"))
+  .selectExpr("array_col[0]").show(2 false)
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(q df
+   ((split ?Description " ") ?myarray)
+   [(.getItem ?myarray 0)]
+   (.show 2 false))
+
+</div>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">User Defined Functions (UDFs)</span>
+<div class="codeside">
+def mul3(double_value):
+   return double_value * 3
+
+val mul3udf = udf(mul3(_:Double):Double)
+
+df.select(mul3udf(col("num"))).show()
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(defudf mul3udf (fn [x] (* x 3)) 1 :double)
+or
+(defn mul3 [x] (* x 3))
+(defudf mul3udf mul3 1 :double)
+or
+(defudf mul3udf :double [x]
+  (* x 3))
+
+
+(q df [(mul3udf ?num)] .show)
+
+
+
+</div>
+      </pre>
+    </td>
+  </tr>
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Join (inner default,and outer)</span>
+
+<div class="codeside">
+val joinExpression = person.col("graduate_program") 
+                     === graduateProgram.col("id")
+person.join(graduateProgram, joinExpression).show()
+
+
+val joinExpression = person.col("graduate_program") 
+                     === graduateProgram.col("id")
+person.join(graduateProgram, joinExpression, "outer").show()
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+
+<div class="codeside">
+(q (person _ _ ?gid)
+   (graduateProgram ?gid __)
+   .show)
+
+(q (person _ _ ?gid)
+   (graduateProgram ?gid __ :outer)
+   .show)
+
+</div>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Aggregate on Dataframe (agg and select)</span>
+<div class="codeside">
+df.select(
+     count("Quantity").alias("ttransactions"),
+     sum("Quantity").alias("tpurchases"),
+     avg("Quantity").alias("avg_purchases"),
+     expr("mean(Quantity)").alias("mean_purchases"))
+   .selectExpr(
+     "tpurchases/ttransactions",
+     "avg_purchases",
+     "mean_purchases").show()
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(q df
+   [((count_ ?Quantity) ?tTransactions)
+    ((sum ?Quantity) ?tPurchases)
+    ((avg ?Quantity) ?avgPurchases)
+    ((mean ?Quantity) ?meanPurchases)]
+   [(div ?tPurchases ?tTransactions) ?avgPurchases ?meanPurchases]
+   .show)
+
+</div>
+      </pre>
+    </td>
+  </tr>
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Aggregate on groups</span>
+<div class="codeside">
+df.groupBy("InvoiceNo", "CustomerId").count().show()
+
+df.groupBy("InvoiceNo").agg(
+   count("Quantity").alias("quan"),
+   sum("Quantity")).show()
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(q df
+   (groupBy ?InvoiceNo ?CustomerId)
+   .count    
+   (.show))
+
+(q df
+   (groupBy ?InvoiceNo)
+   (agg ((count_ ?Quantity) ?quan) (sum ?Quantity))  
+   (.show))
+
+</div>
+      </pre>
+    </td>
+  </tr>
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Window Spec</span>
+<div class="codeside">
+val dfWithDate = df.withColumn("date", to_date(col("InvoiceDate"),
+                                               "MM/d/yyyy H:mm"))
+
+dfWithDate.createOrReplaceTempView("dfWithDate")
+
+val windowSpec = Window
+                 .partitionBy("CustomerId", "date")
+                 .orderBy(col("Quantity").desc)
+                 .rowsBetween(Window.unboundedPreceding, 
+                              Window.currentRow)
+
+val maxPurchaseQuantity = max(col("Quantity")).over(windowSpec)
+val purchaseDenseRank = dense_rank().over(windowSpec)
+val purchaseRank = rank().over(windowSpec)
+
+dfWithDate.where("CustomerId IS NOT NULL").orderBy("CustomerId")
+ .select(
+   col("CustomerId"),col("date"),
+   col("Quantity"),
+   purchaseRank.alias("rank"),
+   purchaseDenseRank.alias("denseRank"),
+   maxPurchaseQuantity.alias("maxq")).show()
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(let [myWindowSpec
+      (q (Window/partitionBy (ca ?CustomerId ?date))                  
+         (order-by (desc ?Quantity))                                   
+         (.rowsBetween (Window/unboundedPreceding) 
+                       (Window/currentRow)))]
+  (q df
+     ((functions/to_date ?InvoiceDate "MM/d/yyyy H:mm") ?date) 
+     ((not-nil_? ?CustomerId))
+     (order-by ?CustomerId)
+     [?CustomerId ?date ?Quantity
+      ((.over (functions/rank) myWindowSpec) ?rank)
+      ((.over (functions/dense_rank) myWindowSpec) ?denseRank)
+      ((.over (max_ ?Quantity) myWindowSpec) ?maxq)]
+     .show))
+
+</div>
+      </pre>
+    </td>
+  </tr>
+
+
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Datasets create and Filter</span>
+
+<div class="codeside">
+case class Flight(DEST_COUNTRY_NAME: String,
+                  ORIGIN_COUNTRY_NAME: String,
+                  count: BigInt)
+val flightsDF = spark.read
+               .parquet("/data/flight-data/parquet/2010-summary.parquet/")
+
+val flights = flightsDF.as[Flight]
+
+def originIsDestination(flight_row: Flight): Boolean = {
+  return flight_row.ORIGIN_COUNTRY_NAME 
+         ==
+         flight_row.DEST_COUNTRY_NAME
+}
+
+flights.filter(flight_row => originIsDestination(flight_row))
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+
+<div class="codeside">
+(clj-bean.core/defbean sparkdefinitive.ch11Datasets.Flight
+                       [[String DEST_COUNTRY_NAME]
+                        [String ORIGIN_COUNTRY_NAME]
+                        [long count]])
+(def flightsDS
+  (-> spark
+      .read
+      (.parquet (str (settings/get-base-path) 
+                 "/data/flight-data/parquet/2010-summary.parquet/"))
+      (.as (Encoders/bean sparkdefinitive.ch11Datasets.Flight))))
+
+(def flightOsameD
+  (q flightsDS
+     (filter_ (fn [flight] (= (.getORIGIN_COUNTRY_NAME flight)
+                              (.getDEST_COUNTRY_NAME flight))))))
+
+</div>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">WordCount</span>
+<div class="codeside">
+val counts = textFile
+             .flatMap(line => line.split(" "))
+             .map(word => (word, 1))
+             .reduceByKey(_ + _)
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(def counts
+  (-> textfile
+      (flatMap (fn [line] (s/split line #" ")))            
+      (mapToPair (fn [word] [word 1]))                  
+      (reduceByKey (fn [v1 v2] (+ v1 v2)))))         
+
+</div>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">Streaming</span>
+<div class="codeside">
+val readStream = spark.readStream.schema(dataSchema)
+                .option("maxFilesPerTrigger", 1)
+                .json("/data/activity-data")
+
+streaming.withColumn("stairs", expr("gt like '%stairs%'"))
+         .where("stairs")
+         .where("gt is not null")
+         .select("gt", "model", "arrival_time", "creation_time")
+         .writeStream
+         .queryName("simple_transform")
+         .format("memory")
+         .outputMode("append")
+         .start()
+
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(def readStream
+     (-> (get-session)
+         (.readStream)
+         (.schema dataSchema)
+         (.option "maxFilesPerTrigger" 1)
+         (.json "/data/activity-data/")))
+
+
+(q readStream
+   ((includes? ?gt "stairs") ?stairs)
+   ((true_? ?stairs) (not-nil_? ?gt))
+   [?gt ?model ?arrival_time ?creation_time]
+   (.writeStream)
+   (.queryName "simple_transform")
+   (.format "memory")
+   (.outputMode "append")
+   (.start))
+
+
+</div>
+      </pre>
+    </td>
+  </tr>
+
+
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">User Defined Functions (UDFs)</span>
+<div class="codeside">
+def mul3(double_value):
+   return double_value * 3
+
+val mul3udf = udf(mul3(_:Double):Double)
+
+df.select(mul3udf(col("num"))).show()
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(defudf mul3udf (fn [x] (* x 3)) 1 :double)
+or
+(defn mul3 [x] (* x 3))
+(defudf mul3udf mul3 1 :double)
+or
+(defudf mul3udf :double [x]
+  (* x 3))
+
+
+(q df [(mul3udf ?num)] .show)
+
+
+
+</div>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="sparqltd">
+      <pre>
+<span style="font-weight :bold; font-size : 45; color : #0099cc;">User Defined Functions (UDFs)</span>
+<div class="codeside">
+def mul3(double_value):
+   return double_value * 3
+
+val mul3udf = udf(mul3(_:Double):Double)
+
+df.select(mul3udf(col("num"))).show()
+
+</div>
+      </pre>
+    </td>
+    <td style= "vertical-align:top">
+      <pre>
+
+<div class="codeside">
+(defudf mul3udf (fn [x] (* x 3)) 1 :double)
+or
+(defn mul3 [x] (* x 3))
+(defudf mul3udf mul3 1 :double)
+or
+(defudf mul3udf :double [x]
+  (* x 3))
+
+
+(q df [(mul3udf ?num)] .show)
+
+
+
+</div>
+      </pre>
+    </td>
+  </tr>
+
+
+    </tbody>
+
+</table>
+</div>
+     
+</body>
+</html> 

@@ -1,0 +1,59 @@
+body {
+  padding-top: 1rem;
+  /*background : #FFE5E5 ;*/
+  background : #FEF5FE;
+}
+
+#navbarsExampleDefault
+{
+  margin-left :190px;
+}
+
+#intro
+{
+  background : #0099cc;
+  height : 520px;
+  
+}
+
+
+#intro-title
+{
+  font-size :90px;
+  text-shadow: 2px 2px 10px #000000;
+  font-family: "Sans-serif", Verdana, serif;
+  font-weight : bold;
+  color : orange ;
+  text-align: center;
+  
+}
+
+#intro-text
+{
+  margin-top : 50px;
+  text-shadow: 1px 1px 10px #000000;
+  font-size :30px;
+  border-width: 1px 1px 1px 1px;
+  text-align : center;
+  color : white ;
+}
+
+#ex-div
+{
+  text-align: center;
+}
+
+#ex-button
+{
+  width : 290px;
+  margin-top :45px;
+}
+
+h2
+{
+  font-size :30px;
+  font-weight : bold;
+  color : orange;
+}
+
+

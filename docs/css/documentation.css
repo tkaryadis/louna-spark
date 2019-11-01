@@ -1,0 +1,260 @@
+.sidenav
+{
+    height: 100%;
+    width: 210px;
+    position: fixed;
+    z-index: 1;
+    top: 80;
+    left: 0;
+    background-color: #F5F5F5; 
+    overflow-x: hidden;
+    padding-top: 100px;
+    padding-left : 15px;     
+}
+
+
+
+#main {
+    margin-left: 210px; 
+    margin-top : 80px;
+    font-size: 21px; 
+    padding-left:10px;
+}
+
+
+
+#main-noside
+{
+  margin-left: 50px; 
+  margin-top : 80px;
+  font-size: 21px; 
+}
+
+#path
+{
+  font-size : 23px;
+  color : #0099cc ;
+}
+
+
+
+pre
+{
+  font-family: Droid Sans;
+  font-size: 18px;
+  white-space: pre-wrap;   /* PP. Browser specific (not valid) styles to make preformatted text wrap */
+}
+
+li
+{
+  margin-top: 2px;
+}
+
+.main-title
+{
+   color : #0099cc;
+   font-size :30px;
+   font-weight :bold;
+   text-align : left;
+}
+
+.title
+{
+   font-size :25px; 
+   font-weight :bold;
+}
+
+.title2
+{
+  font-size :22px; 
+  font-weight :bold;
+}
+
+
+
+.text
+{
+  color : black;
+  font-size :17px; 
+  font-family: Verdana, Geneva, sans-serif;
+  padding: 0px 35px;
+}
+
+.text2
+{
+  color : black;
+  font-size :18px; 
+  font-family: Verdana, Geneva, sans-serif;
+  padding: 0px 45px;
+}
+
+table
+{
+  margin-top : 90px;  
+  margin-left :220px;
+  border-collapse : collapse;
+  border-width : 0px 0px 0px 0px ;
+
+}
+
+.code
+{
+  background-color: #EEEEEE;
+  margin-left :100px;
+  border-left : 1px solid rgb(63, 135, 166);
+  width :700px;
+  margin-top :0px;
+  padding-left :20px;
+  font-family : monospace;
+  font-size : 14px;
+}
+
+.codelong
+{
+  background-color:  #EEEEEE;
+  margin-left :100px;
+  border-left : 1px solid rgb(63, 135, 166);
+  width :900px;
+  margin-top :0px;
+  padding-left :20px;
+  font-family : monospace;
+  font-size : 14px;
+}
+
+.codeside
+{
+  background-color:  #EEEEEE;
+  margin-left :10px;
+  border-left : 1px solid rgb(63, 135, 166);
+  width :600px;
+  margin-right :20px;
+  margin-top :0px;
+  padding-left :20px;
+  font-family : monospace;
+  font-size : 14px;
+}
+
+.codePP
+{
+  background-color: #EEEEEE;
+  margin-left :10px;
+  border-left : 1px solid rgb(63, 135, 166);
+  margin-right :20px;
+  margin-top :0px;
+  padding-left :20px;
+  font-family : monospace;
+  font-size : 14px;
+}
+
+.rec
+{
+  background-color: white;
+
+  border : 1px solid rgb(63, 135, 166);
+  margin-right :20px;
+  margin-left : 10px;
+  margin-top :0px;
+  padding-left :20px;
+  font-family : monospace;
+  font-size : 14px;
+  margin-top : 0px;
+}
+
+.arrow
+{
+  margin-left :650px;
+  margin-top :0px;
+  margin-bottom :0px;
+  padding :0px;
+  width : 30px;
+  height : 30px;  
+}
+
+
+th
+{
+  text-align : center;  
+}
+td
+{
+  padding-top : 20px;
+  border-width : 1px 0px 0px 1px ;
+  font-size :22px;
+  padding-left :10px;
+}
+
+.sparql 
+{
+  font-size:30px;
+  width: 30%
+}
+
+.louna 
+{
+  font-size:30px;
+  width: 70%; 
+}
+
+.sparqltd {
+ 
+ border-width : 1px 0px 0px 0px ;
+}
+
+/*menu*/
+
+#treediv a
+{
+  font-size :18px;
+  font-color :#0099cc;
+}
+
+ul.tree, .tree li {
+    font-size :18px;
+    list-style: none;
+    margin:0;
+    padding:0;
+    cursor: pointer;
+}
+
+.tree ul {
+  display:none;
+  width : 450px;
+}
+
+.tree > li {
+  display:block;
+  background:#eee;
+  margin-bottom:2px;
+}
+
+.tree span {
+  display:block;
+  padding:10px 12px;
+
+}
+
+.icon {
+  display:inline-block;
+}
+
+.tree .hasChildren > .expanded {
+  background:#999;
+}
+
+.tree .hasChildren > .expanded a {
+  color:#fff;
+}
+
+.icon:before {
+  content:"+";
+  display:inline-block;
+  min-width:20px;
+  text-align:center;
+}
+.tree .icon.expanded:before {
+  content:"-";
+}
+
+.show-effect {
+  display:block!important;
+}

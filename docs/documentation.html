@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="./icons/cl.png">
+<link href="./css/bootstrap.min.css" rel="stylesheet">
+<link href="./css/documentation.css" rel="stylesheet">
+<script src="./js/jquery-3.2.1.min.js"></script>
+
+<script>
+function t()
+{
+  $('.tree .icon').click( function() {
+    $(this).parent().toggleClass('expanded').
+    closest('li').find('ul:first').
+    toggleClass('show-effect');
+  });
+}
+window.onload = t;
+</script>
+
+<title>Docs</title>
+
+</head>
+<body>
+
+ <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">    
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="./index.html"><em>&lambda;ouna</em></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./why.html">Why?</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./documentation.html">Docs</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./louna-scala.html"> <em>&lambda;ouna</em> | Scala </a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./internals.html">Internals</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./doc/index.html">API</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="https://bitbucket.org/tkaryadis/louna/src/master/">Code</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<div id="treediv">
+<ul class="sidenav tree">
+  <li class="tree__item">
+    <span><a href="">What is Louna?</a></span>
+  </li>
+  <li class="tree__item">
+    <span><a href="./Documentation/overview.html">Use Louna</a></span>
+  </li>  
+  <li class="tree__item">
+    <span><a href="./Documentation/reference.html">Syntax reference</a></span>
+  </li>
+
+</ul>
+</div>
+
+<div id="main">
+  <h5 class = "main-title"> What is Louna? </h5>
+  <pre >
+<b>Louna</b>
+   
+Clojure library over Apache Spark's Java API.
+Wrappers over the Java API for simpler use of
+   RDDs 
+   Dataframes/Datasets 
+   Structured Streaming API
+Logic based query DSL
+
+<b>Design goals</b>
+
+Simple and minimalistic
+  Intuative queries,avoiding keywords,capital letters,verbose syntax
+Clojuric
+  Queries are written as s-expressions,the code is like writing clojure.
+  Clojure functions can be used in RDDs in Datasets or as UDFs in a simple way.
+Easy Spark interop
+  Louna queries dont restrict Spark code,Spark Java code can be used inside Louna queries
+Programmable
+  User variables,call functions that run queries,make rules etc.
+  A programmable query language can be viewed as 
+  
+    Add programming capabilities into the query language
+    Or
+    Use the logic query language for programming reasons
+  
+
+
+
+  </pre>
+
+</div>
+     
+</body>
+</html> 

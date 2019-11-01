@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="./icons/cl.png">
+<link href="./css/bootstrap.min.css" rel="stylesheet">
+<link href="./css/documentation.css" rel="stylesheet">
+<script src="./js/jquery-3.2.1.min.js"></script>
+
+<script>
+function t()
+{
+  $('.tree .icon').click( function() {
+    $(this).parent().toggleClass('expanded').
+    closest('li').find('ul:first').
+    toggleClass('show-effect');
+  });
+}
+window.onload = t;
+</script>
+
+<title>Docs</title>
+
+</head>
+<body>
+
+ <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">    
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="./index.html"><em>&lambda;ouna</em></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./why.html">Why?</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./documentation.html">Docs</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./louna-scala.html"> <em>&lambda;ouna</em> | Scala </a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./internals.html">Internals</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="./doc/index.html">API</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="https://bitbucket.org/tkaryadis/louna/src/master/">Code</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<div id="treediv">
+<ul class="sidenav tree">
+  <li class="tree__item">
+    <span><a href="./why.html#data">Why Clojure for data</a></span>
+  </li>
+  <li class="tree__item">
+    <span><a href="./why.html#louna">Why Louna for spark</a></span>
+  </li>
+</ul>
+</div>
+
+<div id="main">
+  <h5 class = "main-title"> Why <em>&lambda;ouna</em> </h5>
+<pre >
+
+<b>What is Louna</b>
+1)Clojure library over Apache Spark's Java API.
+2)Wrappers over the Java API for simpler use of
+   RDDs 
+   Dataframes/Datasets 
+   Structured Streaming API
+3)Logic based query DSL
+
+Designed to be easy to use and easy to use with Spark.
+
+Clojure and data processing,is a perfect match.
+Spark runs on JVM also so it can be easily used throw Java API.
+This allows us to use Spark with the beauty and simplicity of Clojure.
+
+<span id="data"></span>
+
+<b>Why Clojure/Louna for data applications?</b>
+
+Clojure is great for data applications.
+Data applications = code,data processing,querying data
+
+1)Code
+  Clojure is a general programming language.
+  It can be used in any type of application.
+  It run on JVM and its very simple to use Java from Clojure. 
+  
+
+2)Data processing
+  Functional programming is great for data processing.
+  Because functional programming is about chaining,and data processing is chaining.
+  (chaining meaning the result of a function is argument of the next function,
+   not do something,store it in memory,do something else,and reload it sometime to continue)
+
+  Either you write it 
+  1)In the more functional programmming style like 
+    <div class="code">(f1 (f2  (f3 ..))) </div>
+    *for code or for mixed code and data processing
+
+  2)In the more data processing style like 
+    <div class="code">
+    (-> f1
+        (f2 ..)
+        (f3 ..))
+    </div>
+    *used for bigger chains of data tranformations
+
+  Clojure syntax serves both programming styles.
+
+
+2)Querying data
+
+  Quering languages are declarative and their roots are in logic.
+  Clojure with its powerfull macros can be extended to create a declarative and logic based
+  query languge.
+
+  Doing that we have one general programmming language that can also process data,and query
+  the data,in a natural way.
+
+  Comparison with other approaches for quering the data.
+
+  1)Object oriented languages 
+    they made to support state based programming not chaining,you can use them for chaining
+    but they are not natural for data processing and they have even bigger problems when it 
+    comes to quering the data
+
+  2)SQL
+    SQL is very good for quering the data but its not a general programming language and to use it
+    you have to seperate programming code from quering code,different functions different programming style.
+    Also SQL is not logical query language.
+
+  3)Mix for example scala that you write sql expressions as strings
+    Again the querying is seperated but its mixed in an unatural way like writing code inside strings.
+    Code in strings have many problems for example variable usage.
+    
+  Louna is made to combine the 3 approaches,in a simple programmable data processing/query language.
+
+  Query in scala and louna (from spark the definitive guide book 2018)
+
+
+  Louna 
+<div class="codelong">
+
+    (q  df
+        ((.and (=_ ?StockCode "DOT") (.or (>_ ?UnitPrice 600)
+                                          (includes? ?Description "POSTAGE"))) ?expensive)
+        ((?expensive))
+        [?expensive ?unitPrice]
+        (.show 5))
+
+</div>
+
+  Scala 
+<div class="codelong">
+
+    val DOTCodeFilter = col("StockCode") === "DOT"
+    val priceFilter = col("UnitPrice") > 600
+    val descripFilter = col("Description").contains("POSTAGE") 
+    df.withColumn("isExpensive", DOTCodeFilter.and(priceFilter.or(descripFilter)))
+      .where("isExpensive")
+      .select("unitPrice", "isExpensive")
+      .show(5)  
+
+</div>
+
+  SQL
+<div class="codelong">
+
+    SELECT UnitPrice, (StockCode = 'DOT' AND
+          (UnitPrice > 600 OR instr(Description, "POSTAGE") >= 1)) as isExpensive
+    FROM dfTable
+    WHERE (StockCode = 'DOT' AND
+          (UnitPrice > 600 OR instr(Description, "POSTAGE") >= 1))
+    LIMIT 5
+
+</div>
+
+  Another query using scala and sql expression
+
+  Louna
+<div class="codelong">
+    (q staticDataFrame
+       [?CustomerId ((*_ ?UnitPrice ?Quantity) ?total_cost) ?InvoiceDate]
+       (groupBy ?CustomerId (functions/window ?InvoiceDate "1 day"))
+       (g/sum ?total_cost)
+       (.show 5)) 
+
+</div>
+
+  Scala/SQL expression
+
+<div class="codelong">
+    staticDataFrame
+    .selectExpr("CustomerId",
+                "(UnitPrice * Quantity) as total_cost",
+                "InvoiceDate")
+    .groupBy(col("CustomerId"), window(col("InvoiceDate"), "1 day"))
+    .sum("total_cost")
+    .show(5)    
+
+</div>
+
+  Louna that is used for querying the data,is declarative,logic based,and compact.
+
+Clojure is ideal language for data applications,because it can do all those 3 in a natural way,
+and using 1 language.
+
+Clojure native functions can be used in RDD's , in Datasets , and as UDF's.
+For example to declare a UDF in louna 
+(defudf myudf1 (fn [x] (* x 2)) 1 :long)
+Or you can use any clojure function instead of anonymous.
+<span id="louna"></span>
+<b>Why Louna for Spark</b>
+
+  1)Because Spark is for writing data processing applications,in which Clojure is very good.
+  2)Spark supports Java,Clojure runs on JVM with very good java interoperability.
+    You can use the Java API thought Clojure,and still have a less verbose syntax than Java,
+    but if you wrapper the Java you can reduce it even more,and if you make a DSL like louna,
+    the complexity is heavily reduced.
+  3)Louna is translated to java spark code,so its like using the Java API
+  4)Louna dont restrict spark for example inside queries you can write any spark java api code.
+    For example
+
+<div class="codelong">
+     (q (flightData2015 ?dest - ?count)
+        (groupBy ?dest)
+        (g/sum ?count)
+        (rename "sum(count)" ?destTotal)
+        (order-by (desc ?destTotal))
+        (.limit 5)
+        (.show))
+
+</div>
+
+     Louna code is mixed with the Java api.
+     q after converting the query to normal spark code is just -> macro.
+     Here .limit and .show is used ,you can use like that any Java api code.
+     Louna makes the writing for Java code simplier by wrapping Java functions or by allow collumns
+     to be named ?var (louna makes it to (functions/col "var"))
+     
+     Louna is far from complete Spark api,but it doesn't restrict spark so its usable even now.
+
+Clojure can make Spark usage simple,i think more simple than the Scala/Java/SQL/Python alternatives.
+
+  </pre>
+
+</div>
+     
+</body>
+</html> 
