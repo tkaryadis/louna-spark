@@ -13,5 +13,6 @@ pom.xml.asc
 /.idea
 /data
 /scala-code
+/out
 
 
