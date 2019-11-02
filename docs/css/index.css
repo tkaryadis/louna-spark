@@ -1,7 +1,7 @@
 body {
   padding-top: 1rem;
   /*background : #FFE5E5 ;*/
-  background : #FEF5FE;
+  background : #FEFAFA;
 }
 
 #navbarsExampleDefault
@@ -11,7 +11,7 @@ body {
 
 #intro
 {
-  background : #0099cc;
+  background : #87CEFA;
   height : 520px;
   
 }
@@ -19,7 +19,7 @@ body {
 
 #intro-title
 {
-  font-size :90px;
+  font-size :95px;
   text-shadow: 2px 2px 10px #000000;
   font-family: "Sans-serif", Verdana, serif;
   font-weight : bold;
@@ -31,8 +31,8 @@ body {
 #intro-text
 {
   margin-top : 50px;
-  text-shadow: 1px 1px 10px #000000;
-  font-size :30px;
+  text-shadow: 2px 2px 5px #000000;
+  font-size :35px;
   border-width: 1px 1px 1px 1px;
   text-align : center;
   color : white ;
