@@ -1,5 +1,5 @@
-(defproject louna/louna-spark "0.1"
-  :description "Clojure library for for Apache Spark,querying and data processing"
+(defproject louna/louna-spark "0.1.0-SNAPSHOT"
+  :description "Clojure library for for Apache Spark, query and process data."
   :url "https://github.com/tkaryadis/louna-spark"
   :license {:name "Apache License"
             :url  "http://www.apache.org/licenses/LICENSE-2.0"}
