@@ -99,9 +99,9 @@ table
 
 .code
 {
-  background-color: #EEEEEE;
+  background-color: #f6f8fa;
   margin-left :100px;
-  border-left : 1px solid rgb(63, 135, 166);
+  border-left : 2px solid rgb(63, 135, 166);
   width :700px;
   margin-top :0px;
   padding-left :20px;
@@ -111,9 +111,9 @@ table
 
 .codelong
 {
-  background-color:  #EEEEEE;
+  background-color:  #f6f8fa;
   margin-left :100px;
-  border-left : 1px solid rgb(63, 135, 166);
+  border-left : 2px solid rgb(63, 135, 166);
   width :900px;
   margin-top :0px;
   padding-left :20px;
@@ -123,9 +123,9 @@ table
 
 .codeside
 {
-  background-color:  #EEEEEE;
+  background-color:  #f6f8fa;
   margin-left :10px;
-  border-left : 1px solid rgb(63, 135, 166);
+  border-left : 2px solid rgb(63, 135, 166);
   width :600px;
   margin-right :20px;
   margin-top :0px;
@@ -136,9 +136,9 @@ table
 
 .codePP
 {
-  background-color: #EEEEEE;
+  background-color: #f6f8fa;
   margin-left :10px;
-  border-left : 1px solid rgb(63, 135, 166);
+  border-left : 2px solid rgb(63, 135, 166);
   margin-right :20px;
   margin-top :0px;
   padding-left :20px;
