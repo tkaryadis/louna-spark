@@ -4,6 +4,6 @@
 (defn init []
   (do (louna.state.settings/set-local-session)
       (louna.state.settings/set-log-level "ERROR")
-      (louna.state.settings/set-base-path "/home/white/IdeaProjects/louna/")))
+      (louna.state.settings/set-base-path "/home/white/IdeaProjects/louna-spark/")))
 
 

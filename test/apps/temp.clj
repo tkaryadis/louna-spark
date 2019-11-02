@@ -4,7 +4,9 @@
             [louna.datasets.sql :as sql]
             louna.library.scalaInterop
             clojure.set
-            clojure.string)
+            clojure.string
+            [louna.datasets.grouped-datasets :as g]
+            [louna.state.settings :as settings])
   (:use louna.datasets.column
         louna.datasets.sql-functions
         louna.q.run
@@ -15,49 +17,34 @@
 
 (louna.state.settings/set-local-session)
 (louna.state.settings/set-log-level "ERROR")
-(louna.state.settings/set-base-path "/home/white/IdeaProjects/louna/")
+(louna.state.settings/set-base-path "/home/white/IdeaProjects/louna-spark/")
 
-#_(def person (sql/seq->df [[0 "Bill Chambers" 0 (long-array [100])]
-                          [1 "Matei Zaharia" 1 (long-array [500 250 100])]
-                          [2 "Michael Armbrust" 1 (long-array [250 100])]]
+(def staticDF (-> (get-session)
+                  (.read)
+                  (.json (str (settings/get-base-path) "/data/activity-data/"))))
 
-                         [["id" :long]
-                          ["name"]
-                          ["graduate_program" :long]
-                          ["spark_status" (t/array-type DataTypes/LongType)]]))
+(def dataSchema (.schema staticDF))
 
-#_(def df (-> (.read (get-session))
-            (.format "csv")
-            (.option "header" "true")
-            (.option "inferSchema" "true")
-            (.load (str (louna.state.settings/get-base-path)
-                        "/data/retail-data/by-day/2010-12-01.csv"))))
+(def readStream (-> (get-session)
+                    (.readStream)
+                    (.schema dataSchema)
+                    (.option "maxFilesPerTrigger" 1)
+                    (.json (str (settings/get-base-path) "/data/activity-data/"))))
 
-#_(.printSchema df)
+(def historicalAgg (q staticDF (groupBy ?gt ?model) (g/avg)))
 
+(.show historicalAgg)
 
-#_(q  df
-    ((.and (contains_? ?StockCode "DOT")
-           (.or (>_ ?UnitPrice 600)
-                (includes? ?Description "POSTAGE"))) ?expensive)
-    ((!?expensive))
-    [?expensive ?unitPrice]
-    (.show 5))
+(q (historicalAgg ?gt ?model ?3:skata "?avg(x):avg-x" "?avg(y):avg-y" "?avg(z):avg-z")
+   .show)
 
-
-#_(q (df ?Quantity:qt ?UnitPrice:price)
-   ((+_ (pow (*_ ?qt ?price) 2.0) 5) ?realQt)
-   (.show 2))
-
-#_(def df1 (-> (.read (get-session))
-            (.format "csv")
-            (.option "header" "true")
-            (.option "inferSchema" "true")
-            (.load (str (louna.state.settings/get-base-path)
-                        "/data/retail-data/all/*.csv"))
-            (.coalesce 5)))
-
-#_(q df1
-   (groupBy ?InvoiceNo)
-   (agg ((count_ ?Quantity) ?quan))
-   (.show))
+(q readStream
+   (drop-col ?Arrival_Time ?Creation_Time ?Index)
+   (sql/cube ?gt ?model)
+   (g/avg)
+   (historicalAgg ?gt ?model "?avg(x):avg-x" "?avg(y):avg-y" "?avg(z):avg-z")
+   (.writeStream)
+   (.queryName "device_counts2")
+   (.format "memory")
+   (.outputMode "complete")
+   (.start))

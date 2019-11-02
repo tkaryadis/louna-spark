@@ -1,4 +1,4 @@
-(ns sparkdefinitive.udaf
+(ns louna-tests.udaf
   (:require sparkdefinitive.init-settings
             [louna.state.settings :as settings]
             louna.datasets.schema
@@ -11,9 +11,11 @@
            (java.util ArrayList)
            (org.apache.spark.sql.expressions UserDefinedAggregateFunction MutableAggregationBuffer)
            (org.apache.spark.sql Row SparkSession)
-           (sparkdefinitive.udafAvg MyAvg)))
+           (louna-tests.udafAvg MyAvg)))
 
-(sparkdefinitive.init-settings/init)
+(settings/set-local-session)
+(settings/set-log-level "ERROR")
+(settings/set-base-path "/home/white/IdeaProjects/louna-spark/")
 
 ;;Proxy doesn't worked,not seriliazeble exception
 

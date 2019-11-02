@@ -180,6 +180,8 @@
   (q resultTable .show)
   (Thread/sleep 1000))
 
+;;ERROR MicroBatchExecution if SparkContext closes before finish the stream
+
 ;;----------------TODO (skipped machine learning page 46)-------------------------------
 
 ;;-----------------rdd-------------------------------------------------------------------

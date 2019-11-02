@@ -1,10 +1,10 @@
-(ns sparkdefinitive.udafAvg
+(ns louna-tests.udafAvg
   (:require louna.datasets.schema)
   (:import (org.apache.spark.sql.types DataTypes)
            (org.apache.spark.sql Row)))
 
 (gen-class
-  :name sparkdefinitive.udafAvg.MyAvg
+  :name louna-tests.udafAvg.MyAvg
   :extends org.apache.spark.sql.expressions.UserDefinedAggregateFunction
   :state state
   :init init)

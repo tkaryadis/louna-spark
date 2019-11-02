@@ -25,11 +25,11 @@
 
 (def dataSchema (.schema staticDF))
 
-;(prn dataSchema)
+(prn dataSchema)
 
-;(.show staticDF 5)
+(.show staticDF 5)
 
-#_(prn (.count staticDF))
+(prn (.count staticDF))
 
 ;;Streaming dont do auto schema inference,so to do it i have to say it by
 ;;  spark.sql.streaming.schemaInference to true
@@ -70,7 +70,7 @@
 
 ;;start streaming+setting options
 
-#_(def writeSteam (-> queryStream
+(def writeSteam (-> queryStream
                     (.writeStream)
                     (.queryName "activity_counts")        ;;random name
                     (.format "memory")                    ;;sink=memory
@@ -98,9 +98,9 @@
 ;;also i can query the data while the stream is running
 
 ;;get the table that the results are stored (name of the query we used)
-;(def resultTable (.table (get-session) "activity_counts"))
+(def resultTable (.table (get-session) "activity_counts"))
 
-#_(dotimes [- 5]
+(dotimes [- 5]
   (q resultTable .show)
   (Thread/sleep 2000))
 
@@ -119,7 +119,7 @@
 ;.start()
 
 
-#_(q readStream
+(q readStream
    ((includes? ?gt "stairs") ?stairs)
    ((true_? ?stairs) (not-nil_? ?gt))
    [?gt ?model ?arrival_time ?creation_time]
@@ -129,7 +129,7 @@
    (.outputMode "append")
    (.start))
 
-;(def resultTable2 (.table (get-session) "simple_transform"))
+(def resultTable2 (.table (get-session) "simple_transform"))
 
 ;;-----------------------------aggr-----------------------------------------------
 
@@ -140,7 +140,7 @@
 ;.writeStream.queryName("device_counts").format("memory").outputMode("complete")
 ;.start()
 
-#_(q readStream
+(q readStream
    (sql/cube ?gt ?model)
    (g/avg)
    (drop-col "avg(Arrival_time)" "avg(Creation_Time)" "avg(Index)")
@@ -150,9 +150,9 @@
    (.outputMode "complete")
    (.start))
 
-#_(def resultTable3 (.table (get-session) "device_counts"))
+(def resultTable3 (.table (get-session) "device_counts"))
 
-#_(dotimes [- 5]
+(dotimes [- 5]
   (q resultTable3 .show)
   (Thread/sleep 2000))
 
@@ -171,16 +171,16 @@
 
 (.show historicalAgg)
 
-#_(q staticDF
+(q staticDF
    (drop-col ?Arrival_Time ?Creation_Time ?Index)
    (sql/cube ?gt ?model)
    (g/avg)
    .show)
 
-#_(q (historicalAgg ?gt ?model ?3:skata "?avg(x):avg-x" "?avg(y):avg-y" "?avg(z):avg-z")
+(q (historicalAgg ?gt ?model ?3:acolumn "?avg(x):avg-x" "?avg(y):avg-y" "?avg(z):avg-z")
    .show)
 
-#_(q readStream
+(q readStream
    (drop-col ?Arrival_Time ?Creation_Time ?Index)
    (sql/cube ?gt ?model)
    (g/avg)
@@ -190,6 +190,8 @@
    (.format "memory")
    (.outputMode "complete")
    (.start))
+
+(System/exit 0)
 
 (q staticDF
    (groupBy ?gt ?model)
@@ -211,10 +213,10 @@
    (.outputMode "complete")
    (.start))
 
-;(def resultTable4 (.table (get-session) "device_counts2"))
+(def resultTable4 (.table (get-session) "device_counts2"))
 
-#_(dotimes [- 5]
+(dotimes [- 5]
     (q resultTable4 .show)
     (Thread/sleep 2000))
 
-(Thread/sleep 100000)
+;;errors if driver exit before batch

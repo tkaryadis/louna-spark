@@ -1,22 +1,24 @@
-(ns sparkdefinitive.udf
-  (:require sparkdefinitive.init-settings
-            [louna.state.settings :as settings]
+(ns louna-tests.udf
+  (:require [louna.state.settings :as settings]
             [louna.datasets.sql :as sql]
-            [louna.datasets.schema :as t])
+            [louna.datasets.schema :as t]
+            [louna.state.settings :as settings])
   (:use louna.datasets.column
         louna.datasets.sql-functions
         louna.q.run
         louna.datasets.udf)
   (:import (org.apache.spark.sql.types DataTypes)))
 
-(sparkdefinitive.init-settings/init)
+(settings/set-local-session)
+(settings/set-log-level "ERROR")
+(settings/set-base-path "/home/white/IdeaProjects/louna-spark/")
 
 ;;---------------------------Schema--------------------------------------
 ;;-----------------------------------------------------------------------
 
 (def df (-> (.read (get-session))
             (.format "json")
-            (.load (str  (settings/get-base-path)
+            (.load (str (settings/get-base-path)
                         "/data/flight-data/json/2015-summary.json"))))
 
 (prn (str (.schema df)))

@@ -25,7 +25,7 @@
   (let [first-qform (louna.q.transform/transform-first-qform first-qform)
         rest-qforms (louna.q.transform/transform-qforms rest-qforms)
         query (concat (list '->) (list first-qform) rest-qforms)
-        - (prn "query" query)
+        ;- (prn "query" query)
         ]
     query))
 

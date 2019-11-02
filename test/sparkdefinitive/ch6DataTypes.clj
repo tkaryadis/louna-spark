@@ -614,11 +614,12 @@
    [?pair]
    (.show 5 false))
 
+
 ;;df.select(map(col("Description"), col("InvoiceNo")).alias("complex_map"))
 ;  .selectExpr("explode(complex_map)").show(2)
 
 (q df
-   ((create-pair ?Description ?InvoiceNo) ?pair)
+   ((pair ?Description ?InvoiceNo) ?pair)
    [(functions/explode ?pair)]
    (.show 5 false))
 
@@ -627,7 +628,7 @@
 
 ;;getItem based on key,ean kapio pair exi alo key,epistefi nul
 (q df
-   ((create-pair ?Description ?InvoiceNo) ?pair)
+   ((pair ?Description ?InvoiceNo) ?pair)
    ((.getItem ?pair "WHITE METAL LANTERN") ?wpair)
    [?wpair]
    (.show 5 false))

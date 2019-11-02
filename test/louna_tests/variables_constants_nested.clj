@@ -1,11 +1,13 @@
-(ns sparkdefinitive.variables-constants-nested
+(ns louna-tests.variables-constants-nested
   (:require sparkdefinitive.init-settings
             [louna.state.settings :as settings])
   (:use louna.datasets.column
         louna.datasets.sql-functions
         louna.q.run))
 
-(sparkdefinitive.init-settings/init)
+(settings/set-local-session)
+(settings/set-log-level "ERROR")
+(settings/set-base-path "/home/white/IdeaProjects/louna-spark/")
 
 ;;--------------------------Load test data--------------------------------
 

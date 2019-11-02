@@ -1,4 +1,4 @@
-(defproject louna-spark "0.1"
+(defproject louna/louna-spark "0.1"
   :description "Clojure library for for Apache Spark,querying and data processing"
   :url "https://github.com/tkaryadis/louna-spark"
   :license {:name "Apache License"
@@ -26,6 +26,7 @@
         louna.rdds.api
         louna.state.settings
 
+        ;For testing only
         ;sparkdefinitive.ch2Intro
         ;sparkdefinitive.ch3IntroTools
         ;sparkdefinitive.ch4and5
@@ -37,10 +38,10 @@
         ;sparkdefinitive.ch13RDD2
         ;sparkdefinitive.ch21Streaming
 
-        ;sparkdefinitive.variables-constants-nested
-        ;sparkdefinitive.udf
-        ;sparkdefinitive.udafAvg
-        ;sparkdefinitive.udaf
+        ;louna-tests.variables-constants-nested
+        ;louna-tests.udf
+        ;louna-tests.udafAvg
+        ;louna-tests.udaf
 
         ;apps.wordcount
         ;apps.temp

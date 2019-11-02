@@ -128,7 +128,7 @@
 ;; "warn"   warn but join if join in variables i haven't named
 ;; "ignore"
 
-(state/set-join-safety "error")
+(state/set-join-safety "warn")
 
 ;;[id name graduate_program spark_status]  person
 ;;[id degree department school]            graduateProgram
