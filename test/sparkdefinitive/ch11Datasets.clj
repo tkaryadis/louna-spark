@@ -180,5 +180,45 @@
     .count
     (.show 40))
 
+
+;;----------------Steamming dataset example from end of chapter 21--------------------
+
+;;case class Flight(DEST_COUNTRY_NAME: String, ORIGIN_COUNTRY_NAME: String,
+;count: BigInt)
+;val dataSchema = spark.read
+;.parquet("/data/flight-data/parquet/2010-summary.parquet/")
+;.schema
+;val flightsDF = spark.readStream.schema(dataSchema)
+;.parquet("/data/flight-data/parquet/2010-summary.parquet/")
+;val flights = flightsDF.as[Flight]
+
+;def originIsDestination(flight_row: Flight): Boolean = {
+;return flight_row.ORIGIN_COUNTRY_NAME == flight_row.DEST_COUNTRY_NAME
+;}
+;flights.filter(flight_row => originIsDestination(flight_row))
+;.groupByKey(x => x.DEST_COUNTRY_NAME).count()
+;.writeStream.queryName("device_counts").format("memory").outputMode("complete")
+
+(def flightsDF-stream
+  (-> (get-session)
+      .readStream
+      (.schema (.schema flightsDF))
+      (.parquet (str (settings/get-base-path) "/data/flight-data/parquet/2010-summary.parquet/"))))
+
+(def flightsDS-stream (.as flightsDF-stream (Encoders/bean sparkdefinitive.ch11Datasets.Flight)))
+
+
+(q flightsDS-stream
+   (filter_ (fn [flight] (not= (.getORIGIN_COUNTRY_NAME flight) (.getDEST_COUNTRY_NAME flight))))
+   (groupByKey (fn [flight] (.getDEST_COUNTRY_NAME flight)) (Encoders/STRING))
+   (.count)
+   (.writeStream)
+   (.queryName "device_counts_ds")
+   (.format "console")
+   (.outputMode "complete")
+   .start)
+
+
+(Thread/sleep 1000000)
 ;;Complete except pages 211-212 (flatMapGroups/mapValues/reduceGroups examples)
 

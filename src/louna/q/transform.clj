@@ -122,49 +122,48 @@
   (clojure.string/starts-with? (str qvar) "?"))
 
 (defn qvars-to-strs [qvars]
-  (into [] (map (fn [qvar]
-                  (if (or (qvar? qvar) (unnamed-qvar? qvar)) ;;if not a variable symbol
-                    (str qvar)
-                    qvar))
-                qvars)))
+  (mapv (fn [qvar]
+          (if (or (qvar? qvar) (unnamed-qvar? qvar)) ;;if not a variable symbol
+            (str qvar)
+            qvar))
+        qvars))
 
 (defn tranform-select-args [qform]
-  (into [] (map (fn [select-arg]
-                  (cond
+  (mapv (fn [select-arg]
+          (cond
 
-                    (bind-qform? select-arg)
-                    (let [code (str (first select-arg))
-                          code (remove-qmark code)
-                          bind-var (subs (str (second select-arg)) 1)]
-                      (list (symbol ".alias") code bind-var))
+            (bind-qform? select-arg)
+            (let [code (str (first select-arg))
+                  code (remove-qmark code)
+                  bind-var (subs (str (second select-arg)) 1)]
+              (list (symbol ".alias") code bind-var))
 
-                    (or (= select-arg '*) (= select-arg "*") (= select-arg '__))
-                    (list 'org.apache.spark.sql.functions/expr "*")
+            (or (= select-arg '*) (= select-arg "*") (= select-arg '__))
+            (list 'org.apache.spark.sql.functions/expr "*")
 
-                    ;;qvar as string
-                    (string? select-arg)
-                    (qvar->col select-arg)
+            ;;qvar as string
+            (string? select-arg)
+            (qvar->col select-arg)
 
-                    ;;?qvar or code with ?qvars (column functions)
-                    :else
-                    (remove-qmark select-arg)))
-                qform)))
+            ;;?qvar or code with ?qvars (column functions)
+            :else
+            (remove-qmark select-arg)))
+        qform))
 
 (defn tranform-agg-args [qform]
   (let [agg-args (rest qform)
-        agg-args (map (fn [agg-arg]
+        qvars (mapv (fn [agg-arg]
                         (if (louna.q.transform/bind-qform? agg-arg)
                           (let [code (str (first agg-arg))
                                 code (louna.q.transform/remove-qmark code)
                                 bind-var (subs (str (second agg-arg)) 1)]
                             `(.alias ~code ~bind-var))
                           (louna.q.transform/remove-qmark agg-arg)))
-                      agg-args)
-        qvars (into [] agg-args)]
+                      agg-args)]
     qvars))
 
 (defn add-filter-boolean-functions [qform]
-  (let [qform (map (fn [filter-form]
+  (let [qform (mapv (fn [filter-form]
                      (let [fst (first filter-form)]
                        (cond
                          (qvar? fst)
@@ -175,8 +174,7 @@
 
                          :else
                          filter-form)))
-                   qform)
-        qform (into [] qform)]
+                   qform)]
     qform))
 
 (defn transform-qforms [qforms]

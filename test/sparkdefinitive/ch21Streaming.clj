@@ -10,7 +10,8 @@
         louna.datasets.sql-functions
         louna.q.run
         louna.library.util
-        louna.rdds.api))
+        louna.rdds.api)
+  (:import (org.apache.spark.sql.streaming Trigger)))
 
 (sparkdefinitive.init-settings/init)
 
@@ -25,11 +26,9 @@
 
 (def dataSchema (.schema staticDF))
 
-(prn dataSchema)
+;(.show staticDF 5)
 
-(.show staticDF 5)
-
-(prn (.count staticDF))
+;(prn (.count staticDF))
 
 ;;Streaming dont do auto schema inference,so to do it i have to say it by
 ;;  spark.sql.streaming.schemaInference to true
@@ -47,6 +46,7 @@
 ;;val streaming = spark.readStream.schema(dataSchema)
 ;.option("maxFilesPerTrigger", 1).json("/data/activity-data")
 
+;;we could use spark.sql.streaming.schemaInference to true also
 (def readStream (-> (get-session)
                     (.readStream)
                     (.schema dataSchema)
@@ -54,7 +54,8 @@
                     (.json (str (settings/get-base-path) "/data/activity-data/"))))
 
 
-;;(.option "maxFilesPerTrigger" 1) means that every 1 file => trigger
+;;trigger based on end of file,not time
+;;(.option "maxFilesPerTrigger" 1)
 
 ;;Like in batch queries tranformations are lazy
 ;;val activityCounts = streaming.groupBy("gt").count()
@@ -69,40 +70,32 @@
 ;.start()
 
 ;;start streaming+setting options
+;;driver program must not terminated before stream end
 
 (def writeSteam (-> queryStream
                     (.writeStream)
                     (.queryName "activity_counts")        ;;random name
                     (.format "memory")                    ;;sink=memory
                     (.outputMode "complete")              ;;ovewrite old results
-                    (.start)
-                    ))
-
-;;streams are supposed to run forever,so they run in background
-;;this will start the stream in background,and here will not run
-;;at all if driver program will exit after this
+                    (.start)))
 
 ;;See a list of background streams
 ;;name(the one we given) and a UUID that spark gave
 ;;spark.streams.active
 ;(prn (-> (get-session) .streams .active))
 
-
 ;;activityQuery.awaitTermination()
 
 ;;block and wait for the stream
 ;;(.awaitTermination writeSteam)
 
-;;the stream is now running(suppose not await above)
-;;to not terminate the drive program i can write a loop with sleep
-;;also i can query the data while the stream is running
-
 ;;get the table that the results are stored (name of the query we used)
 (def resultTable (.table (get-session) "activity_counts"))
 
-(dotimes [- 5]
+(dotimes [- 100]
   (q resultTable .show)
   (Thread/sleep 2000))
+
 
 
 ;;-------------------------bind+filter on stream------------------------
@@ -152,7 +145,7 @@
 
 (def resultTable3 (.table (get-session) "device_counts"))
 
-(dotimes [- 5]
+#_(dotimes [- 5]
   (q resultTable3 .show)
   (Thread/sleep 2000))
 
@@ -167,7 +160,9 @@
 ;.writeStream.queryName("device_counts").format("memory").outputMode("complete")
 ;.start()
 
-(def historicalAgg (q staticDF (groupBy ?gt ?model) (g/avg)))
+(def historicalAgg (q staticDF
+                      (groupBy ?gt ?model)
+                      (g/avg)))
 
 (.show historicalAgg)
 
@@ -177,9 +172,10 @@
    (g/avg)
    .show)
 
-(q (historicalAgg ?gt ?model ?3:acolumn "?avg(x):avg-x" "?avg(y):avg-y" "?avg(z):avg-z")
+#_(q (historicalAgg ?gt ?model ?2:arrival "?avg(x):avg-x" "?avg(y):avg-y" "?avg(z):avg-z")
    .show)
 
+;;join of streams not yet supported,here one was staticDF and other stream
 (q readStream
    (drop-col ?Arrival_Time ?Creation_Time ?Index)
    (sql/cube ?gt ?model)
@@ -189,34 +185,49 @@
    (.queryName "device_counts2")
    (.format "memory")
    (.outputMode "complete")
-   (.start))
-
-(System/exit 0)
-
-(q staticDF
-   (groupBy ?gt ?model)
-   (g/avg)
-   [?gt ?model "?avg(x)" "avg(y)" "avg(z)"]
-   (rename "avg(x)" "avg-x")
-   (rename "avg(y)" "avg-y")
-   (rename "avg(z)" "avg-z")
-   .show)
-
-(q readStream
-   (drop-col ?Arrival_Time ?Creation_Time ?Index)
-   (sql/cube ?gt ?model)
-   (g/avg)
-   (historicalAgg ?gt ?model "?avg(x):avg-x" "?avg(y):avg-y" "?avg(z):avg-z")
-   (.writeStream)
-   (.queryName "device_counts2")
-   (.format "memory")
-   (.outputMode "complete")
-   (.start))
+   .start)
 
 (def resultTable4 (.table (get-session) "device_counts2"))
 
-(dotimes [- 5]
+#_(dotimes [- 5]
     (q resultTable4 .show)
     (Thread/sleep 2000))
 
+;;import org.apache.spark.sql.streaming.Trigger
+;activityCounts.writeStream.trigger(Trigger.ProcessingTime("100 seconds"))
+;.format("console").outputMode("complete").start()
+
+;;default(not .trigger)=> many batches(when finish processing go to next)
+(q queryStream
+   (.writeStream)
+   ;(.trigger (Trigger/ProcessingTime "10 seconds"))
+   (.format "console")
+   (.outputMode "complete")
+   ;.start
+   )
+
+;;batch every 10 seconds (every 10 seconds write to sink,here the console)
+(q queryStream
+   (.writeStream)
+   (.trigger (Trigger/ProcessingTime "10 seconds"))
+   (.format "console")
+   (.outputMode "complete")
+   ;.start
+   )
+
+
+;;activityCounts.writeStream.trigger(Trigger.Once())
+;.format("console").outputMode("complete").start()
+
+(q queryStream
+   (.writeStream)
+   (.trigger (Trigger/Once))
+   (.format "console")
+   (.outputMode "complete")
+   .start)
+
+(Thread/sleep 1000000)
+
 ;;errors if driver exit before batch
+;;completed,skipped kafka source/sink,pages 354-356
+;;datasets streaming example in the ch11Datasets.clj
