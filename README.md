@@ -11,3 +11,27 @@ Book scala code and data [here](https://github.com/databricks/Spark-The-Definiti
 To run the examples read test/sparkdefinitive/ch1Readme.clj  
 (Examples and the book solutions are included also inside the louna-spark main repository inside test package)    
 The examples are tested with **Apache Spark 2.4.0** and **JDK 8**  
+
+Example query
+
+```
+(q  df
+    ((.and (=_ ?StockCode "DOT") 
+           (.or (>_ ?UnitPrice 600)
+                (includes? ?Description "POSTAGE"))) ?expensive)
+    ((?expensive))
+    [?expensive ?unitPrice]
+    (.show 5))
+```
+
+Equivalent to
+```
+val DOTCodeFilter = col("StockCode") === "DOT"
+val priceFilter = col("UnitPrice") > 600
+val descripFilter = col("Description").contains("POSTAGE") 
+df.withColumn("isExpensive", 
+              DOTCodeFilter.and(priceFilter.or(descripFilter)))
+  .where("isExpensive")
+  .select("unitPrice", "isExpensive")
+  .show(5) 
+```
