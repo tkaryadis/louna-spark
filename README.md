@@ -4,6 +4,8 @@
 - Clojars [[louna/louna-spark "0.1.0-SNAPSHOT"]](https://clojars.org/louna/louna-spark)  
 - Documentation [https://tkaryadis.github.io/louna-spark](https://tkaryadis.github.io/louna-spark/)  
 
+Don't use project moved to [SQuery-spark](https://github.com/tkaryadis/squery-spark) that is not datalog based.
+
 ## Examples
 [Solutions to Spark The definitive guide](https://github.com/tkaryadis/louna-spark-def-guide)  
 From the book [Spark: The Definitive Guide by Matei Zaharia, Bill Chambers](https://www.oreilly.com/library/view/spark-the-definitive/9781491912201/)  
