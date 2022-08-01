@@ -1,10 +1,10 @@
 ## λouna
-- Experimental project
+- Experimental project, don't use it
 - Uses sparql like queries(in s-expression syntax), to generate spark-SQL.
 - Clojars [[louna/louna-spark "0.1.0-SNAPSHOT"]](https://clojars.org/louna/louna-spark)  
 - Documentation [https://tkaryadis.github.io/louna-spark](https://tkaryadis.github.io/louna-spark/)  
 
-Project moved to [SQuery-spark](https://github.com/tkaryadis/squery-spark) that is not datalog based.  
+Project moved to [SQuery-spark](https://github.com/tkaryadis/squery-spark) that is not datalog-based.  
 
 ## Examples
 [Solutions to Spark The definitive guide](https://github.com/tkaryadis/louna-spark-def-guide)  
