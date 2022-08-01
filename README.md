@@ -5,7 +5,6 @@
 - Documentation [https://tkaryadis.github.io/louna-spark](https://tkaryadis.github.io/louna-spark/)  
 
 Project changed and moved to [SQuery-spark](https://github.com/tkaryadis/squery-spark) that is not datalog-based.  
-That is intented for real use.
 
 ## Examples
 [Solutions to Spark The definitive guide](https://github.com/tkaryadis/louna-spark-def-guide)  
